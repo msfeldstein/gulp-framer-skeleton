@@ -9,6 +9,9 @@ var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash.assign');
 var connect = require('gulp-connect');
+var watch = require('gulp-watch');
+
+var OUT_PATH = "dist";
 
 // add custom browserify options here
 var customOpts = {
@@ -27,6 +30,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.html', ['copy-index']);
   // Watch image files
   gulp.watch('src/images/**/*', ['images']);
+  watch(OUT_PATH).pipe(connect.reload());
   gulp.start('connect');
 });
 
@@ -44,14 +48,12 @@ function bundle() {
     .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
        // Add transformation tasks to the pipeline here.
     .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(connect.reload())
     .pipe(gulp.dest('./dist'));
 }
 
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
-    .pipe(gulp.dest('dist/images'))
-    .pipe(notify({ message: 'Images task complete' }));
+    .pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('connect', function() {
@@ -63,6 +65,5 @@ gulp.task('connect', function() {
 
 gulp.task('copy-index', function() {
   gulp.src('./src/index.html')
-    .pipe(connect.reload())
     .pipe(gulp.dest('./dist'))
 })

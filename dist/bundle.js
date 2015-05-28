@@ -1,26 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// var Hammer = require("hammerjs");
-//
-// var ball = document.createElement('div');
-// ball.style.backgroundColor = "Blue";
-// ball.style.width = ball.style.height = "50px";
-// ball.style.borderRadius = "25px";
-// document.body.appendChild(ball);
-//
-// var hammertime = new Hammer(ball, {});
-// hammertime.on('pan', function(ev) {
-//     console.log(ev);
-// });
-var Framer = require("./js/framer");
-var layer = new Layer({
-  width: 100,
-  height: 100,
-  borderRadius: 50
-})
-layer.draggable.enabled = true
-layer.center()
+require("./js/framer");
+var sc = require("./js/soundcloud");
 
-},{"./js/framer":2}],2:[function(require,module,exports){
+var scroller = new ScrollComponent({
+  width: 300,
+  height: 100,
+  scrollVertical: false
+})
+
+var waveform = new Layer({
+  superLayer: scroller.content,
+  width: 640,
+  height: 100,
+  image: "images/waveform.png"
+});
+
+scroller.center();
+
+},{"./js/framer":2,"./js/soundcloud":3}],2:[function(require,module,exports){
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -20573,6 +20570,26 @@ layer.center()
 /***/ }
 /******/ ]);
 
+
+},{}],3:[function(require,module,exports){
+var clientID = "1ced9749f8b4bc3b21c33b70c9006e46";
+
+SC.initialize({
+  client_id: clientID,
+  redirect_uri: "http://example.com/callback.html",
+});
+
+module.exports = {
+  search: function(q, cb) {
+    SC.get('/tracks', { q: q }, function(tracks) {
+      for (var i = 0; i < tracks.length; i++) {
+        var track = tracks[i];
+        track.stream_url = track.stream_url + "?client_id=" + clientID;
+      }
+      cb(tracks);
+    });
+  }
+}
 
 },{}]},{},[1])
 
