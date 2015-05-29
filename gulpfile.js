@@ -10,6 +10,8 @@ var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash.assign');
 var connect = require('gulp-connect');
 var watch = require('gulp-watch');
+var sass = require('gulp-sass');
+var es6transpiler = require('gulp-es6-transpiler');
 
 var OUT_PATH = "dist";
 
@@ -26,6 +28,11 @@ b.on('log', gutil.log); // output build logs to terminal
 // i.e. b.transform(coffeeify);
 
 gulp.task('default', function() {
+  gulp.start('style');
+  gulp.start('js');
+  gulp.start('images');
+  gulp.start('copy-index');
+  gulp.watch('src/style.scss', ['style']);
   gulp.watch('src/**/*.js', ['js']);
   gulp.watch('src/**/*.html', ['copy-index']);
   // Watch image files
@@ -44,6 +51,7 @@ function bundle() {
     .pipe(source('bundle.js'))
     // optional, remove if you don't need to buffer file contents
     .pipe(buffer())
+    // .pipe(es6transpiler())
     // optional, remove if you dont want sourcemaps
     .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
        // Add transformation tasks to the pipeline here.
@@ -54,6 +62,12 @@ function bundle() {
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
     .pipe(gulp.dest('dist/images'));
+});
+
+gulp.task('style', function() {
+  return gulp.src('src/style.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('connect', function() {
