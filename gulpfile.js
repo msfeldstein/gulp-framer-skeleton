@@ -2,6 +2,7 @@
 
 var watchify = require('watchify');
 var browserify = require('browserify');
+var coffeeify = require('gulp-coffeeify');
 var gulp = require('gulp');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
@@ -11,23 +12,11 @@ var assign = require('lodash.assign');
 var connect = require('gulp-connect');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
+var rename = require('gulp-rename');
 var es6transpiler = require('gulp-es6-transpiler');
 var bonjour = require('frameless-connect');
 
-
 var OUT_PATH = "dist";
-
-// add custom browserify options here
-var customOpts = {
-  entries: ['./src/index.js'],
-  debug: true
-};
-var opts = assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts));
-b.on('update', bundle); // on any dep update, runs the bundler
-b.on('log', gutil.log); // output build logs to terminal
-// add transformations here
-// i.e. b.transform(coffeeify);
 
 gulp.task('default', function() {
   gulp.start('style');
@@ -35,7 +24,7 @@ gulp.task('default', function() {
   gulp.start('images');
   gulp.start('copy-index');
   gulp.watch('src/style.scss', ['style']);
-  gulp.watch('src/**/*.js', ['js']);
+  gulp.watch('src/**/*.coffee', ['js']);
   gulp.watch('src/**/*.html', ['copy-index']);
   // Watch image files
   gulp.watch('src/images/**/*', ['images']);
@@ -43,23 +32,24 @@ gulp.task('default', function() {
   gulp.start('connect');
 });
 
-gulp.task('js', bundle); // so you can run `gulp js` to build the file
-
-
-function bundle() {
-  return b.bundle()
-    // log errors if they happen
-    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+gulp.task('js', function() {
+  var bundler = browserify({
+    entries: ['src/index.coffee'],
+    transform: ['coffeeify'],
+    extensions: ['.coffee']
+  });
+  var watcher = watchify(bundler);
+  return watcher
+    .on('update', function() {
+      watcher.bundle()
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./dist'))
+    })
+    .bundle()
     .pipe(source('bundle.js'))
-    // optional, remove if you don't need to buffer file contents
-    .pipe(buffer())
-    // .pipe(es6transpiler())
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-       // Add transformation tasks to the pipeline here.
-    .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./dist'));
-}
+    .pipe(gulp.dest('./dist'))
+});
+
 
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
