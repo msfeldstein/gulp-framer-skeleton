@@ -12,6 +12,8 @@ var connect = require('gulp-connect');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
 var es6transpiler = require('gulp-es6-transpiler');
+var bonjour = require('frameless-connect');
+
 
 var OUT_PATH = "dist";
 
@@ -77,6 +79,7 @@ gulp.task('connect', function() {
   });
   var spawn = require('child_process').spawn
   spawn('open', ['http://localhost:8080']);
+  bonjour(8080);
 });
 
 gulp.task('copy-index', function() {
