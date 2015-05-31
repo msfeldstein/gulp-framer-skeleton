@@ -4,6 +4,7 @@ var watchify = require('watchify');
 var browserify = require('browserify');
 var coffeeify = require('gulp-coffeeify');
 var gulp = require('gulp');
+var glob = require('glob');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
@@ -20,11 +21,13 @@ var OUT_PATH = "dist";
 
 gulp.task('default', function() {
   gulp.start('style');
+  gulp.start('coffee');
   gulp.start('js');
   gulp.start('images');
   gulp.start('copy-index');
   gulp.watch('src/style.scss', ['style']);
-  gulp.watch('src/**/*.coffee', ['js']);
+  gulp.watch('src/**/*.js', ['js']);
+  gulp.watch('src/**/*.coffee', ['coffee']);
   gulp.watch('src/**/*.html', ['copy-index']);
   // Watch image files
   gulp.watch('src/images/**/*', ['images']);
@@ -32,11 +35,30 @@ gulp.task('default', function() {
   gulp.start('connect');
 });
 
-gulp.task('js', function() {
+
+gulp.task('coffee', function() {
+  var coffeeFiles = glob.sync('./src/index.coffee');
   var bundler = browserify({
-    entries: ['src/index.coffee'],
+    entries: coffeeFiles,
     transform: ['coffeeify'],
     extensions: ['.coffee']
+  });
+  var watcher = watchify(bundler);
+  return watcher
+    .on('update', function() {
+      watcher.bundle()
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./dist'))
+    })
+    .bundle()
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest('./dist'))
+});
+
+gulp.task('js', function() {
+  var jsFiles = glob.sync('./src/index.js');
+  var bundler = browserify({
+    entries: jsFiles
   });
   var watcher = watchify(bundler);
   return watcher
