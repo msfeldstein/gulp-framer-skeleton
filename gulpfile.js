@@ -75,6 +75,8 @@ gulp.task('connect', function() {
     root: 'dist',
     livereload: true
   });
+  var spawn = require('child_process').spawn
+  spawn('open', ['http://localhost:8080']);
 });
 
 gulp.task('copy-index', function() {
