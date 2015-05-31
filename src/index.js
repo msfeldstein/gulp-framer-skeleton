@@ -1,17 +1,10 @@
 require("./js/framer");
-var sc = require("./js/soundcloud");
+Framer.Device = new Framer.DeviceView();
+Framer.Device.setupContext();
 
-var scroller = new ScrollComponent({
-  width: 300,
+c1 = new Layer({
+  width:100,
   height: 100,
-  scrollVertical: false
+  backgroundColor: "blue",
+  borderRadius: 50
 })
-
-var waveform = new Layer({
-  superLayer: scroller.content,
-  width: 640,
-  height: 100,
-  image: "images/waveform.png"
-});
-
-scroller.center();
