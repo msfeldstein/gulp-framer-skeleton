@@ -18,6 +18,8 @@ var sass = require('gulp-sass');
 var rename = require('gulp-rename');
 var es6transpiler = require('gulp-es6-transpiler');
 var bonjour = require('frameless-connect');
+var myip = require('my-ip');
+var qrcode = require('qrcode-terminal');
 
 gulp.task('default', function() {
   gulp.start('style');
@@ -46,10 +48,12 @@ gulp.task('coffee', function() {
   return watcher
     .on('update', function() {
       watcher.bundle()
+      .on('error', gutil.log)
       .pipe(source('bundle.js'))
       .pipe(gulp.dest(OUT_PATH))
     })
     .bundle()
+    .on('error', gutil.log)
     .pipe(source('bundle.js'))
     .pipe(gulp.dest(OUT_PATH))
 });
@@ -63,10 +67,12 @@ gulp.task('js', function() {
   return watcher
     .on('update', function() {
       watcher.bundle()
+      .on('error', gutil.log)
       .pipe(source('bundle.js'))
       .pipe(gulp.dest(OUT_PATH))
     })
     .bundle()
+    .on('error', gutil.log)
     .pipe(source('bundle.js'))
     .pipe(gulp.dest(OUT_PATH))
 });
@@ -93,7 +99,13 @@ gulp.task('connect', function() {
     root: 'dist',
     livereload: true
   });
+  gutil.log(gutil.colors.green("Listening on http://" + myip() + ":" + 8080))
   var spawn = require('child_process').spawn
   spawn('open', ['http://localhost:8080']);
   bonjour(8080);
 });
+
+gulp.task('ip', function() {
+  qrcode.generate("http://" + myip());
+  gutil.log(gutil.colors.green("http://" + myip() + ":" + 8080))
+})
