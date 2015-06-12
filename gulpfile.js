@@ -29,7 +29,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.coffee', ['coffee']);
   gulp.watch('src/**/*.html', ['copy-index']);
   gulp.watch('src/images/**/*', ['images']);
-  // watch(OUT_PATH).pipe(connect.reload());
+  watch(OUT_PATH).pipe(connect.reload());
   gulp.start('connect');
 });
 
