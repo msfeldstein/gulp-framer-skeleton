@@ -10,13 +10,9 @@ var glob = require('glob');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
-var sourcemaps = require('gulp-sourcemaps');
-var assign = require('lodash.assign');
 var connect = require('gulp-connect');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
-var rename = require('gulp-rename');
-var es6transpiler = require('gulp-es6-transpiler');
 var bonjour = require('frameless-connect');
 var myip = require('my-ip');
 var qrcode = require('qrcode-terminal');
@@ -33,7 +29,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.coffee', ['coffee']);
   gulp.watch('src/**/*.html', ['copy-index']);
   gulp.watch('src/images/**/*', ['images']);
-  watch(OUT_PATH).pipe(connect.reload());
+  // watch(OUT_PATH).pipe(connect.reload());
   gulp.start('connect');
 });
 
@@ -42,7 +38,8 @@ gulp.task('coffee', function() {
   var bundler = browserify({
     entries: coffeeFiles,
     transform: ['coffeeify'],
-    extensions: ['.coffee']
+    extensions: ['.coffee'],
+    debug: true
   });
   var watcher = watchify(bundler);
   return watcher
@@ -61,7 +58,8 @@ gulp.task('coffee', function() {
 gulp.task('js', function() {
   var jsFiles = glob.sync('./src/index.js');
   var bundler = browserify({
-    entries: jsFiles
+    entries: jsFiles,
+    debug: true
   });
   var watcher = watchify(bundler);
   return watcher

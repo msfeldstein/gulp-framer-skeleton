@@ -31,3 +31,10 @@ npm.load(function() {
     console.log("npm: ", message);
   })
 })
+
+try {
+  child_process.execSync("which gulps");
+  console.log("Start the server by running `gulp`")
+} catch (e) {
+  console.error("Install gulp globally with `npm install gulp -g`");
+}
