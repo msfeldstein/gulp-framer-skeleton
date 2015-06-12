@@ -13,3 +13,11 @@ neededFiles.forEach(function(filename) {
   var file = __dirname + '/../' + filename;
   fsx.copySync(file, newdir + "/" + filename);
 });
+
+process.chdir(projectName);
+npm.load(function() {
+  npm.commands.install();
+  npm.on("log", function(message) {
+    console.log("npm: ", message);
+  })
+})

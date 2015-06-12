@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "generate-prototype": "bin/generate.js"
+  },
   "dependencies": {
     "browserify": "^10.2.1",
     "coffeeify": "^1.1.0",
