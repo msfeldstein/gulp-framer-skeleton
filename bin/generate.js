@@ -29,12 +29,13 @@ npm.load(function() {
   npm.commands.install();
   npm.on("log", function(message) {
     console.log("npm: ", message);
-  })
-})
+  });
 
-try {
-  child_process.execSync("which gulps");
-  console.log("Start the server by running `gulp`")
-} catch (e) {
-  console.error("Install gulp globally with `npm install gulp -g`");
-}
+  try {
+    child_process.execSync("which gulp");
+    console.log("Start the server by running `gulp`")
+  } catch (e) {
+    console.error("Install gulp globally with `npm install gulp -g` then run server with `gulp`");
+  }
+
+})
